@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TssUtils", "TssUtils.csproj", "{8D13C10A-651A-47BE-9E64-252E023404DA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8D13C10A-651A-47BE-9E64-252E023404DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D13C10A-651A-47BE-9E64-252E023404DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D13C10A-651A-47BE-9E64-252E023404DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D13C10A-651A-47BE-9E64-252E023404DA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
