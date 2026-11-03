@@ -14,19 +14,6 @@ public static class TypeExtensions
 
     extension(Type type)
     {
-        public bool IsIntegerType => Type.GetTypeCode(type) switch
-        {
-            TypeCode.Byte or
-                TypeCode.SByte or
-                TypeCode.Int16 or
-                TypeCode.UInt16 or
-                TypeCode.Int32 or
-                TypeCode.UInt32 or
-                TypeCode.Int64 or
-                TypeCode.UInt64 => true,
-            _ => false
-        };
-
         public bool IsFloatingPointType => Type.GetTypeCode(type) switch
         {
             TypeCode.Single or
@@ -44,19 +31,34 @@ public static class TypeExtensions
             _ => false
         };
 
-        public string Format()
+        public bool IsSignedIntegerType => Type.GetTypeCode(type) switch
         {
+            TypeCode.SByte or
+                TypeCode.Int16 or
+                TypeCode.Int32 or
+                TypeCode.Int64 => true,
+            _ => false
+        };
+
+        public bool IsIntegerType => type.IsUnsignedIntegerType || type.IsSignedIntegerType;
+
+        public bool IsNumericType => type.IsFloatingPointType || type.IsIntegerType;
+
+        public string Format(Func<string, string>? formatter = null)
+        {
+            formatter ??= static name => name;
+
             var result = type.Name;
 
             if (!type.IsGenericType)
-                return result;
+                return formatter(result);
 
             var tick = result.IndexOf('`');
 
             if (tick >= 0)
                 result = result[..tick];
 
-            return $"{result}<" +
+            return $"{formatter(result)}<" +
                    type.GetGenericArguments()
                        .Select(static arg =>
                            arg.Format()

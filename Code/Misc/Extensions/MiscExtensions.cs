@@ -15,5 +15,14 @@ public static class MiscExtensions
     }
 
     public static string GetFancyMessage(this Exception ex) =>
-        $"[{ex.GetType().Format().RemoveSuffix("Exception")}]: {ex.Message}";
+        (
+            ex.GetType() == typeof(Exception)
+                ? string.Empty
+                : $"[{ex.GetType().Format(static name => name.RemoveSuffix("Exception"))}]: "
+        ) +
+        ex.Message
+#if DEBUG
+        + "\n" + ex.StackTrace
+#endif
+    ;
 }

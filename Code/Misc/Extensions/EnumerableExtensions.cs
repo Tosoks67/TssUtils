@@ -55,7 +55,46 @@ public static class EnumerableExtensions
             }
         }
 
+        public IEnumerable<T> AppendIfAll(T item, Func<T, bool> predicate)
+        {
+            using var enumerator = enumerable.GetEnumerator();
+
+            var shouldAdd = true;
+            while (enumerator.MoveNext())
+            {
+                var current = enumerator.Current;
+                if (shouldAdd && !predicate(current))
+                    shouldAdd = false;
+                yield return current;
+            }
+
+            if (shouldAdd)
+                yield return item;
+        }
+
+        public IEnumerable<T> AppendIfAny(T item, Func<T, bool> predicate)
+        {
+            using var enumerator = enumerable.GetEnumerator();
+
+            var shouldAdd = false;
+            while (enumerator.MoveNext())
+            {
+                var current = enumerator.Current;
+                if (!shouldAdd && predicate(current))
+                    shouldAdd = true;
+                yield return current;
+            }
+
+            if (shouldAdd)
+                yield return item;
+        }
+
+        public byte Sum(Func<T, byte> selector) => enumerable.Select(selector).Sum();
+        public sbyte Sum(Func<T, sbyte> selector) => enumerable.Select(selector).Sum();
+        public short Sum(Func<T, short> selector) => enumerable.Select(selector).Sum();
         public ushort Sum(Func<T, ushort> selector) => enumerable.Select(selector).Sum();
+        public uint Sum(Func<T, uint> selector) => enumerable.Select(selector).Sum();
+        public ulong Sum(Func<T, ulong> selector) => enumerable.Select(selector).Sum();
     }
 
     extension<T>(ICollection<T> collection)
@@ -101,11 +140,81 @@ public static class EnumerableExtensions
         public ReadOnlyCollection<T> AsReadOnly() => new(collection);
     }
 
+    public static byte Sum(this IEnumerable<byte> source)
+    {
+        if (source == null)
+            throw new ArgumentNullException(nameof(source));
+        byte num1 = 0;
+        foreach (var num2 in source)
+            checked
+            {
+                num1 += num2;
+            }
+
+        return num1;
+    }
+
+    public static sbyte Sum(this IEnumerable<sbyte> source)
+    {
+        if (source == null)
+            throw new ArgumentNullException(nameof(source));
+        sbyte num1 = 0;
+        foreach (var num2 in source)
+            checked
+            {
+                num1 += num2;
+            }
+
+        return num1;
+    }
+
+    public static short Sum(this IEnumerable<short> source)
+    {
+        if (source == null)
+            throw new ArgumentNullException(nameof(source));
+        short num1 = 0;
+        foreach (var num2 in source)
+            checked
+            {
+                num1 += num2;
+            }
+
+        return num1;
+    }
+
     public static ushort Sum(this IEnumerable<ushort> source)
     {
         if (source == null)
             throw new ArgumentNullException(nameof(source));
         ushort num1 = 0;
+        foreach (var num2 in source)
+            checked
+            {
+                num1 += num2;
+            }
+
+        return num1;
+    }
+
+    public static uint Sum(this IEnumerable<uint> source)
+    {
+        if (source == null)
+            throw new ArgumentNullException(nameof(source));
+        uint num1 = 0;
+        foreach (var num2 in source)
+            checked
+            {
+                num1 += num2;
+            }
+
+        return num1;
+    }
+
+    public static ulong Sum(this IEnumerable<ulong> source)
+    {
+        if (source == null)
+            throw new ArgumentNullException(nameof(source));
+        ulong num1 = 0;
         foreach (var num2 in source)
             checked
             {
@@ -170,6 +279,9 @@ public static class EnumerableExtensions
     {
         public T? FirstOrNullable()
         {
+            if (enumerable is IList<T> { Count: > 0 } list)
+                return list[0];
+
             using var enumerator = enumerable.GetEnumerator();
 
             return enumerator.MoveNext()
@@ -184,6 +296,28 @@ public static class EnumerableExtensions
                     return item;
 
             return null;
+        }
+
+        public T? LastOrNullable()
+        {
+            if (enumerable is IList<T> { Count: > 0 and var count } list)
+                return list[count - 1];
+
+            T? result = null;
+            foreach (var item in enumerable)
+                result = item;
+
+            return result;
+        }
+
+        public T? LastOrNullable(Func<T, bool> predicate)
+        {
+            T? result = null;
+            foreach (var item in enumerable)
+                if (predicate(item))
+                    result = item;
+
+            return result;
         }
     }
 }
