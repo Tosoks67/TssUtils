@@ -79,6 +79,13 @@
                 AssemblyPath="$(TargetPath)"
                 OutputPath="$(TargetDir)"
                 ReferencePath="$(SL_DEV_REFERENCES)"
-                RunOnSelf="True"/>
+                RunOnSelf="True"
+                BlacklistedAssemblyNames="
+                    UnityEngine.CoreModule;
+                    Assembly-CSharp;
+                    Exiled.API;
+                    System.IO.Pipelines;
+                    System.Text.Encodings.Web"
+        />
     </Target>
 </Project>

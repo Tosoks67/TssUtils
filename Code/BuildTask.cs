@@ -18,6 +18,7 @@ public class BuildTask : Task
     [Required] public string AssemblyPath { get; set; } = string.Empty;
     [Required] public string OutputPath { get; set; } = string.Empty;
     [Required] public string ReferencePath { get; set; } = string.Empty;
+    public string[] BlacklistedAssemblyNames { get; set; } = [];
     public bool RunOnSelf { get; set; } = false;
 
     public override bool Execute()
@@ -27,6 +28,13 @@ public class BuildTask : Task
 
         try
         {
+            BlacklistedAssemblyNames =
+            [
+                ..
+                BlacklistedAssemblyNames
+                    .Select(static str => str.Trim())
+            ];
+
             outputAssemblyNames =
             [
                 .. Directory.GetFiles(OutputPath, "*.dll")
@@ -77,15 +85,21 @@ public class BuildTask : Task
                 return false;
             }
 
-            var assembly = RunOnSelf
+            var assemblyToCheck = RunOnSelf
                 ? typeof(BuildTask).Assembly
                 : Assembly.LoadFrom(AssemblyPath);
 
-            LogMsg($"{nameof(assembly)} is now {assembly.FullName}");
+            LogMsg($"\n{nameof(assemblyToCheck)} is now {assemblyToCheck.FullName}\n");
 
             var methods = outputAssemblyNames
                 .Select(tuple =>
                     {
+                        if (BlacklistedAssemblyNames.Any(name => name == tuple.Name.Name))
+                        {
+                            LogMsg($"Assembly {tuple.Name.Name} is blacklisted. Skipping.");
+                            return null;
+                        }
+
                         if (
                             AppDomain.CurrentDomain
                                 .GetAssemblies()
@@ -110,7 +124,7 @@ public class BuildTask : Task
                     }
                 )
                 .RemoveNulls()
-                .AppendIfAll(assembly, loaded => loaded != assembly)
+                .AppendIfAll(assemblyToCheck, loaded => loaded != assemblyToCheck)
                 .SelectMany(loaded =>
                     {
                         if (
@@ -186,7 +200,7 @@ public class BuildTask : Task
 
             foreach (var method in methods)
             {
-                method.Invoke(null, [assembly]);
+                method.Invoke(null, [assemblyToCheck]);
                 LogMsg($"Successfully ran {ShortMethodName(method)}");
             }
 
