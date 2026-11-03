@@ -4,26 +4,33 @@ namespace TssUtils.Code.Misc.Classes.Results;
 
 public readonly struct TryGet<T> : ITryGet<T>
 {
-    public TryGet(T value)
+    private TryGet(T value)
     {
         Success = true;
-        ErrorMessage = string.Empty;
+        Exception = null!;
         Value = value;
     }
 
-    public TryGet(string errorMessage)
+    private TryGet(string errorMessage)
     {
         Success = false;
-        ErrorMessage = errorMessage;
+        Exception = new Exception(errorMessage);
+        Value = default!;
+    }
+
+    private TryGet(Exception exception)
+    {
+        Success = false;
+        Exception = exception;
         Value = default!;
     }
 
     public bool Success { get; }
 
-    public string ErrorMessage => !Success
+    public Exception Exception => !Success
         ? field
         : throw new InvalidOperationException(
-            $"Tried accessing {nameof(ErrorMessage)} on a successful {nameof(TryGet<>)}"
+            $"Tried accessing {nameof(Exception)} on a successful {nameof(TryGet<>)}"
         );
 
     public T Value => Success
@@ -60,15 +67,17 @@ public readonly struct TryGet<T> : ITryGet<T>
                 nameof(result)
             );
 
-        return new TryGet<T>(result.ErrorMessage);
+        return new TryGet<T>(result.Exception);
     }
+
+    public static implicit operator TryGet<T>(Exception exception) => new(exception);
 
     public static implicit operator bool(TryGet<T> tryGet) => tryGet.Success;
 
-    public static implicit operator string(TryGet<T> tryGet) => tryGet.ErrorMessage;
+    public static implicit operator string(TryGet<T> tryGet) => tryGet.Exception.GetFancyMessage();
 
     public static implicit operator Result(TryGet<T> tryGet) =>
         tryGet.Success
             ? new Result()
-            : new Result(tryGet.ErrorMessage);
+            : new Result(tryGet.Exception);
 }

@@ -3,31 +3,20 @@
 public interface IResult
 {
     public bool Success { get; }
-    public string ErrorMessage { get; }
+    public Exception Exception { get; }
 }
 
 public static class ResultExtensions
 {
     extension(IResult result)
     {
-        public bool HasErrored(out string errorMessage)
+        public bool HasErrored(out Exception exception)
         {
-            errorMessage = result.Success
+            exception = result.Success
                 ? null!
-                : result.ErrorMessage;
+                : result.Exception;
 
             return !result.Success;
-        }
-
-        public bool HasErrored() =>
-            result.HasErrored(out _);
-
-        public void ThrowIfErrored(Func<string, Exception>? errorFunc = null)
-        {
-            errorFunc ??= static message => new Exception(message);
-
-            if (!result.Success)
-                throw errorFunc(result.ErrorMessage);
         }
     }
 }

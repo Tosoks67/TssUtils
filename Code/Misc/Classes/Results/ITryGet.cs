@@ -9,21 +9,25 @@ public static class TryGetExtensions
 {
     extension<T>(ITryGet<T> tryGet)
     {
-        public bool HasErrored(out string errorMessage, out T value)
+        public bool HasErrored(out Exception exception, out T value)
         {
             value = tryGet.Success
                 ? tryGet.Value
                 : default!;
 
-            return tryGet.HasErrored(out errorMessage);
+            return tryGet.HasErrored(out exception);
         }
+    }
 
-        public void ThrowIfErrored(
-            out T value,
-            Func<string, Exception>? errorFunc = null)
-        {
-            tryGet.ThrowIfErrored(errorFunc);
-            value = tryGet.Value;
-        }
+    extension<T>(ITryGet<T> tryGet)
+        where T : class
+    {
+        public T? ValueOrNull() => tryGet.Success ? tryGet.Value : null;
+    }
+
+    extension<T>(ITryGet<T> tryGet)
+        where T : struct
+    {
+        public T? AsNullable() => tryGet.Success ? tryGet.Value : null;
     }
 }

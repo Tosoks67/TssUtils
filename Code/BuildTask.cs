@@ -32,10 +32,13 @@ public class BuildTask : Task
                 .. Directory.GetFiles(OutputPath, "*.dll")
                     .Select((AssemblyName, string)? (path) =>
                         {
-                            if (!TryGet<AssemblyName>.RunSafe(() =>
+                            if (
+                                !TryGet<AssemblyName>
+                                    .RunSafe(() =>
                                         AssemblyName.GetAssemblyName(path)
                                     )
-                                    .HasErrored(out _, out var value))
+                                    .HasErrored(out _, out var value)
+                            )
                                 return (value, path);
 
                             Log.LogWarning($"Failed the load of assembly name for [output] {Path.GetFileName(path)}");
@@ -49,10 +52,13 @@ public class BuildTask : Task
                 .. Directory.GetFiles(ReferencePath, "*.dll")
                     .Select((AssemblyName, string)? (path) =>
                         {
-                            if (!TryGet<AssemblyName>.RunSafe(() =>
+                            if (
+                                !TryGet<AssemblyName>
+                                    .RunSafe(() =>
                                         AssemblyName.GetAssemblyName(path)
                                     )
-                                    .HasErrored(out _, out var value))
+                                    .HasErrored(out _, out var value)
+                            )
                                 return (value, path);
 
                             Log.LogWarning(
@@ -78,21 +84,25 @@ public class BuildTask : Task
             LogMsg($"{nameof(assembly)} is now {assembly.FullName}");
 
             var methods = outputAssemblyNames
-                .Tap(tuple => LogMsg($"Output assembly: {tuple.Name}"))
-                .Where(static tuple =>
-                    AppDomain.CurrentDomain
-                        .GetAssemblies()
-                        .All(assembly =>
-                            assembly.GetName().Name != tuple.Name.Name
-                        )
-                )
-                .Tap(tuple => LogMsg($"Non-loaded assembly: {tuple.Name}"))
                 .Select(tuple =>
                     {
-                        if (!TryGet<Assembly>.RunSafe(() =>
+                        if (
+                            AppDomain.CurrentDomain
+                                .GetAssemblies()
+                                .FirstOrDefault(loaded =>
+                                    loaded.GetName().Name == tuple.Name.Name
+                                )
+                            is { } foundAssembly
+                        )
+                            return foundAssembly;
+
+                        if (
+                            !TryGet<Assembly>
+                                .RunSafe(() =>
                                     Assembly.LoadFrom(tuple.FullPath)
                                 )
-                                .HasErrored(out _, out var value))
+                                .HasErrored(out _, out var value)
+                        )
                             return value;
 
                         Log.LogWarning($"Failed the loading of assembly {tuple.Name}");
@@ -100,19 +110,20 @@ public class BuildTask : Task
                     }
                 )
                 .RemoveNulls()
-                .Append(assembly)
-                .Tap(loaded => LogMsg($"Assembly: {loaded.FullName}"))
+                .AppendIfAll(assembly, loaded => loaded != assembly)
                 .SelectMany(loaded =>
                     {
-                        if (!TryGet<Type[]>.RunSafe(loaded.GetTypes)
-                                .HasErrored(out _, out var types))
+                        if (
+                            !TryGet<Type[]>
+                                .RunSafe(loaded.GetTypes)
+                                .HasErrored(out _, out var types)
+                        )
                             return types;
 
                         Log.LogWarning($"Failed the loading of types for assembly {loaded.FullName}");
                         return [];
                     }
                 )
-                .Tap(type => LogMsg($"Type to check: {type.DeclaringType?.Name ?? "<global>"}::{type.Format()}"))
                 .SelectMany(static t =>
                     t.GetMethods(
                         BindingFlags.Static
@@ -121,13 +132,15 @@ public class BuildTask : Task
                         | BindingFlags.DeclaredOnly
                     )
                 )
-                .Tap(method => LogMsg($"Method to check: {ShortMethodName(method)}"))
                 .Where(method =>
                     {
-                        if (!TryGet<bool>.RunSafe(() =>
+                        if (
+                            !TryGet<bool>
+                                .RunSafe(() =>
                                     method.IsDefined(typeof(VerifyMethodAttribute), false)
                                 )
-                                .HasErrored(out _, out var value))
+                                .HasErrored(out _, out var value)
+                        )
                             return value;
 
                         Log.LogWarning($"Failed the attribute check for method {ShortMethodName(method)}");
@@ -142,27 +155,28 @@ public class BuildTask : Task
             {
                 var longName = LongMethodName(method);
 
-                if (method.IsDefined(
+                if (
+                    method.IsDefined(
                         typeof(AsyncStateMachineAttribute),
                         false
-                    ))
+                    )
+                )
                     throw new InvalidOperationException(
-                        "Method cannot be async\n\n" +
-                        longName + "\n"
+                        $"Method cannot be async\n\n{longName}\n"
                     );
 
                 if (method.ContainsGenericParameters)
                     throw new InvalidOperationException(
-                        "Method cannot have generic parameters\n\n" +
-                        longName + "\n"
+                        $"Method cannot have generic parameters\n\n{longName}\n"
                     );
 
-                if (method.GetParameters().Length is not 1
+                if (
+                    method.GetParameters().Length is not 1
                     || method.GetParameters()[0].ParameterType != typeof(Assembly)
-                    || method.ReturnType != typeof(void))
+                    || method.ReturnType != typeof(void)
+                )
                     throw new FormatException(
-                        "Method does not have a void (Assembly) signature\n\n" +
-                        longName + "\n"
+                        $"Method does not have a void (Assembly) signature\n\n{longName}\n"
                     );
 
                 LogMsg($"Checked {ShortMethodName(method)}");
@@ -208,14 +222,32 @@ public class BuildTask : Task
             {
                 var nameObj = new AssemblyName(args.Name);
 
-                if (outputAssemblyNames
-                        .FirstOrNullable(tuple => tuple.Name.Name == nameObj.Name)
-                    is { } foundOutputTuple)
+                if (
+                    AppDomain.CurrentDomain
+                        .GetAssemblies()
+                        .FirstOrDefault(assembly =>
+                            assembly.GetName().Name == nameObj.Name
+                        )
+                    is { } foundLoaded
+                )
+                    return foundLoaded;
+
+                if (
+                    outputAssemblyNames
+                        .FirstOrNullable(tuple =>
+                            tuple.Name.Name == nameObj.Name
+                        )
+                    is { } foundOutputTuple
+                )
                     return Assembly.LoadFrom(foundOutputTuple.FullPath);
 
-                if (referenceAssemblyNames
-                        .FirstOrNullable(tuple => tuple.Name.Name == nameObj.Name)
-                    is { } foundReferenceTuple)
+                if (
+                    referenceAssemblyNames
+                        .FirstOrNullable(tuple =>
+                            tuple.Name.Name == nameObj.Name
+                        )
+                    is { } foundReferenceTuple
+                )
                     return Assembly.LoadFrom(foundReferenceTuple.FullPath);
             }
             catch (Exception e)

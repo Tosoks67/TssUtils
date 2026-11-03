@@ -1,25 +1,33 @@
-﻿namespace TssUtils.Code.Misc.Classes.Results;
+﻿using TssUtils.Code.Misc.Extensions;
+
+namespace TssUtils.Code.Misc.Classes.Results;
 
 public readonly struct Result : IResult
 {
     public Result()
     {
         Success = true;
-        ErrorMessage = string.Empty;
+        Exception = null!;
     }
 
     public Result(string errorMessage)
     {
         Success = false;
-        ErrorMessage = errorMessage;
+        Exception = new Exception(errorMessage);
+    }
+
+    public Result(Exception exception)
+    {
+        Success = false;
+        Exception = exception;
     }
 
     public bool Success { get; }
 
-    public string ErrorMessage => !Success
+    public Exception Exception => !Success
         ? field
         : throw new InvalidOperationException(
-            $"Tried accessing {nameof(ErrorMessage)} on a successful {nameof(Result)}"
+            $"Tried accessing {nameof(Exception)} on a successful {nameof(Result)}"
         );
 
     public static Result RunSafe(Action action)
@@ -48,7 +56,10 @@ public readonly struct Result : IResult
     public static implicit operator Result(string errorMessage) =>
         new(errorMessage);
 
+    public static implicit operator Result(Exception exception) =>
+        new(exception);
+
     public static implicit operator bool(Result result) => result.Success;
 
-    public static explicit operator string(Result result) => result.ErrorMessage;
+    public static explicit operator string(Result result) => result.Exception.GetFancyMessage();
 }

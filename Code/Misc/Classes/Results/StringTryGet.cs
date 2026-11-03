@@ -2,19 +2,26 @@
 
 public readonly struct StringTryGet : ITryGet<string>
 {
-    public StringTryGet(string str, bool isError = false)
+    private StringTryGet(string str, bool isError = false)
     {
         Success = !isError;
         if (isError)
         {
-            ErrorMessage = str;
-            Value = string.Empty;
+            Exception = new Exception(str);
+            Value = null!;
         }
         else
         {
-            ErrorMessage = string.Empty;
+            Exception = null!;
             Value = str;
         }
+    }
+
+    private StringTryGet(Exception exception)
+    {
+        Success = false;
+        Exception = exception;
+        Value = null!;
     }
 
     public static StringTryGet Error(string errorMessage) =>
@@ -22,10 +29,10 @@ public readonly struct StringTryGet : ITryGet<string>
 
     public bool Success { get; }
 
-    public string ErrorMessage => !Success
+    public Exception Exception => !Success
         ? field
         : throw new InvalidOperationException(
-            $"Tried accessing {nameof(ErrorMessage)} on a successful {nameof(StringTryGet)}"
+            $"Tried accessing {nameof(Exception)} on a successful {nameof(StringTryGet)}"
         );
 
     public string Value => Success
@@ -45,13 +52,15 @@ public readonly struct StringTryGet : ITryGet<string>
                 nameof(result)
             );
 
-        return new StringTryGet(result.ErrorMessage, true);
+        return new StringTryGet(result.Exception);
     }
+
+    public static implicit operator StringTryGet(Exception exception) => new(exception);
 
     public static implicit operator bool(StringTryGet tryGet) => tryGet.Success;
 
     public static implicit operator Result(StringTryGet tryGet) =>
         tryGet.Success
             ? new Result()
-            : new Result(tryGet.ErrorMessage);
+            : new Result(tryGet.Exception);
 }

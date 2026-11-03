@@ -7,43 +7,46 @@ namespace TssUtils.Code.Commands;
 
 public abstract class CommandBase : ICommand, IHelpProvider
 {
+    private static readonly char[] StringStarters = ['"', '\''];
     public abstract ConsoleType ConsoleType { get; }
-
-    protected static char[] AcceptedStringStarters { get; } = ['"', '\''];
+    public static char[] StringArgumentStarters => [.. StringStarters];
 
     public bool Execute(
         ArraySegment<string> arguments,
         ICommandSender sender,
         out string response)
     {
-        if (ParseArguments(arguments)
+        if (
+            TryGet<string[]>
+            .RunSafe(() =>
+                ParseArguments(arguments)
+            )
             .HasErrored(
-                out var argErrMsg,
+                out var argEx,
                 out var args
-            ))
+            )
+        )
         {
-            response = argErrMsg;
+            response = argEx.GetFancyMessage();
             return false;
         }
 
         try
         {
-            if (!Execute(args, sender)
+            if (
+                !Execute(args, sender)
                     .HasErrored(
                         out var errMsg,
                         out response
-                    ))
+                    )
+            )
                 return true;
 
-            response = errMsg;
+            response = errMsg.GetFancyMessage();
         }
         catch (Exception ex)
         {
-#if DEBUG
-            response = ex.ToString();
-#else
             response = ex.GetFancyMessage();
-#endif
         }
 
         return false;
@@ -54,32 +57,23 @@ public abstract class CommandBase : ICommand, IHelpProvider
     public abstract string Description { get; }
 
     public string GetHelp(ArraySegment<string> arguments) =>
-        ParseArguments(arguments)
+        TryGet<string[]>
+            .RunSafe(() =>
+                ParseArguments(arguments)
+            )
             .HasErrored(
                 out var argErrMsg,
                 out var args
             )
-            ? argErrMsg
+            ? argErrMsg.GetFancyMessage()
             : GetHelp(args);
 
     protected virtual string GetHelp(string[] args) => Description;
 
     protected abstract StringTryGet Execute(string[] args, ICommandSender sender);
 
-    private static TryGet<string[]> ParseArguments(ArraySegment<string> args)
-    {
-        try
-        {
-            return UnsafeParseArguments(args);
-        }
-        catch (Exception ex)
-        {
-            return $"{ex.GetType().Format().RemoveSuffix("Exception")}: {ex.Message}";
-        }
-    }
-
     // the core idea and code done by me; polishing + comments made by Claude
-    private static string[] UnsafeParseArguments(ArraySegment<string> args)
+    private static string[] ParseArguments(ArraySegment<string> args)
     {
         var result = new List<string>();
         char? quoteChar = null; // Current quote character being read, null if not in a string
@@ -87,6 +81,7 @@ public abstract class CommandBase : ICommand, IHelpProvider
 
         foreach (var arg in args)
         {
+            // todo translations
             var contentAfterStrErr = $"Nieoczekiwana zawartość po zamknięciu cytatu: {arg} <- TUTAJ";
             var quoteInMiddleErr = $"Nieoczekiwany znak cytatu w środku ciągu znaków: {arg} <- TUTAJ";
 
@@ -164,7 +159,7 @@ public abstract class CommandBase : ICommand, IHelpProvider
             : [.. result];
     }
 
-    private static bool IsQuoteCharacter(char c) => AcceptedStringStarters.Contains(c);
+    private static bool IsQuoteCharacter(char c) => StringStarters.Contains(c);
 }
 
 [Flags]
