@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Reflection;
 using TssUtils.Code.Misc.Classes;
-using TssUtils.Code.Misc.Classes.Results;
 using UnityEngine;
 
 namespace TssUtils.Code.Misc.Extensions;
@@ -25,24 +24,6 @@ public static class EnumExtensions
             return GetValues<T>()
                 .Where(static flag => !flag.Equals(default(T)))
                 .Where(flag => value.HasFlag(flag));
-        }
-
-        public static T? GetRandom()
-        {
-            var values = GetValues<T>().ToArray();
-
-            var areAllZero = values.All(static value => value.Weight == 0);
-
-            return values
-                .GetRandomWeighted(value =>
-                    areAllZero ? (ushort)1 : value.Weight
-                )
-                .HasErrored(
-                    out _,
-                    out var chosenValue
-                )
-                ? null
-                : chosenValue;
         }
     }
 

@@ -21,5 +21,6 @@ namespace TssUtils.Code.Misc.Classes;
 ///     </code>
 /// </example>
 [MeansImplicitUse]
+[UsedImplicitly]
 [AttributeUsage(AttributeTargets.Method)]
 public class VerifyMethodAttribute : Attribute;

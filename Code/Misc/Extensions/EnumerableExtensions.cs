@@ -1,6 +1,5 @@
 ﻿using System.Collections.ObjectModel;
 using TssUtils.Code.Misc.Classes;
-using TssUtils.Code.Misc.Classes.Results;
 using Random = UnityEngine.Random;
 
 namespace TssUtils.Code.Misc.Extensions;
@@ -112,22 +111,6 @@ public static class EnumerableExtensions
             }
 
             return -1;
-        }
-
-        public TryGet<T> GetRandomWeighted(Func<T, ushort> weightSelector)
-        {
-            var totalWeight = collection.Sum(weightSelector);
-            var random = (ushort)Random.RangeInclusive(1, totalWeight);
-            foreach (var element in collection)
-            {
-                var weight = weightSelector(element);
-                if (random <= weight)
-                    return element;
-
-                random -= weight;
-            }
-
-            return "All elements have zeroed weights";
         }
     }
 
