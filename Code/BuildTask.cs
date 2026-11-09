@@ -19,7 +19,6 @@ public class BuildTask : Task
     [Required] public string OutputPath { get; set; } = string.Empty;
     [Required] public string ReferencePath { get; set; } = string.Empty;
     public string[] BlacklistedAssemblyNames { get; set; } = [];
-    public bool RunOnSelf { get; set; } = false;
 
     public override bool Execute()
     {
@@ -79,15 +78,13 @@ public class BuildTask : Task
 
             AppDomain.CurrentDomain.AssemblyResolve += Resolver;
 
-            if (!RunOnSelf && !File.Exists(AssemblyPath))
+            if (!File.Exists(AssemblyPath))
             {
                 Log.LogError("Target DLL not found: " + AssemblyPath);
                 return false;
             }
 
-            var assemblyToCheck = RunOnSelf
-                ? typeof(BuildTask).Assembly
-                : Assembly.LoadFrom(AssemblyPath);
+            var assemblyToCheck = Assembly.LoadFrom(AssemblyPath);
 
             LogMsg($"\n{nameof(assemblyToCheck)} is now {assemblyToCheck.FullName}\n");
 

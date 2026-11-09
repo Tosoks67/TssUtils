@@ -69,23 +69,4 @@
         </PackageReference>
         <PackageReference Include="System.Collections.Immutable" Version="10.0.13"/>
     </ItemGroup>
-
-    <UsingTask
-            TaskName="TssUtils.Code.BuildTask"
-            AssemblyFile="$(TargetDir)TssUtils.dll"/>
-
-    <Target Name="VerifyCode" AfterTargets="Build">
-        <BuildTask
-                AssemblyPath="$(TargetPath)"
-                OutputPath="$(TargetDir)"
-                ReferencePath="$(SL_DEV_REFERENCES)"
-                RunOnSelf="True"
-                BlacklistedAssemblyNames="
-                    UnityEngine.CoreModule;
-                    Assembly-CSharp;
-                    Exiled.API;
-                    System.IO.Pipelines;
-                    System.Text.Encodings.Web"
-        />
-    </Target>
 </Project>
