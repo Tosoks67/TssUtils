@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel;
 using System.Reflection;
-using TssUtils.Code.Misc.Classes;
+using TssUtils.Code.Classes;
 using UnityEngine;
 
-namespace TssUtils.Code.Misc.Extensions;
+namespace TssUtils.Code.Extensions;
 
 public static class EnumExtensions
 {

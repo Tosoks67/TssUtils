@@ -1,4 +1,4 @@
-﻿namespace TssUtils.Code.Misc.Extensions;
+﻿namespace TssUtils.Code.Extensions;
 
 public static class BasicExtensions
 {

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Immutable;
 using System.Reflection;
 
-namespace TssUtils.Code.Misc.Extensions;
+namespace TssUtils.Code.Extensions;
 
 public static class TypeExtensions
 {

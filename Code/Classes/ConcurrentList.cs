@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.ObjectModel;
 
-namespace TssUtils.Code.Misc.Classes;
+namespace TssUtils.Code.Classes;
 
 public class ConcurrentList<T> : IList<T>, IReadOnlyCollection<T>
 {

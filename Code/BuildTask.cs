@@ -3,9 +3,9 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 using Microsoft.Build.Framework;
-using TssUtils.Code.Misc.Classes;
-using TssUtils.Code.Misc.Classes.Results;
-using TssUtils.Code.Misc.Extensions;
+using TssUtils.Code.Classes;
+using TssUtils.Code.Classes.Results;
+using TssUtils.Code.Extensions;
 using Task = Microsoft.Build.Utilities.Task;
 
 namespace TssUtils.Code;

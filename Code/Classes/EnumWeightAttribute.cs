@@ -1,4 +1,4 @@
-﻿namespace TssUtils.Code.Misc.Classes;
+﻿namespace TssUtils.Code.Classes;
 
 [AttributeUsage(AttributeTargets.Field)]
 public class EnumWeightAttribute(ushort weight) : Attribute

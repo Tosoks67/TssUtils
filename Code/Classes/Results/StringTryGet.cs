@@ -1,4 +1,4 @@
-﻿namespace TssUtils.Code.Misc.Classes.Results;
+﻿namespace TssUtils.Code.Classes.Results;
 
 public readonly struct StringTryGet : ITryGet<string>
 {

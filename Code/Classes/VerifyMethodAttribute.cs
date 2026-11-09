@@ -1,6 +1,6 @@
 ﻿using JetBrains.Annotations;
 
-namespace TssUtils.Code.Misc.Classes;
+namespace TssUtils.Code.Classes;
 
 /// <summary>
 ///     Marks a method as a verifying method

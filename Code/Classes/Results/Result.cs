@@ -1,6 +1,6 @@
-﻿using TssUtils.Code.Misc.Extensions;
+﻿using TssUtils.Code.Extensions;
 
-namespace TssUtils.Code.Misc.Classes.Results;
+namespace TssUtils.Code.Classes.Results;
 
 public readonly struct Result : IResult
 {

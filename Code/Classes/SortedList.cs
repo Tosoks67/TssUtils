@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace TssUtils.Code.Misc.Classes;
+namespace TssUtils.Code.Classes;
 
 public class SortedList<T>(List<T> list, IComparer<T> comparer) : IList<T>
 {

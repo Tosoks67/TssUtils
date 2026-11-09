@@ -1,7 +1,7 @@
 ﻿using System.Collections.Concurrent;
-using TssUtils.Code.Misc.Extensions;
+using TssUtils.Code.Extensions;
 
-namespace TssUtils.Code.Misc.Classes;
+namespace TssUtils.Code.Classes;
 
 public class InheritChainDepthComparer(Type mustInheritFrom) : IComparer<Type>
 {

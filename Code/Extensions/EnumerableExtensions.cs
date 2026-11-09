@@ -1,8 +1,8 @@
 ﻿using System.Collections.ObjectModel;
-using TssUtils.Code.Misc.Classes;
+using TssUtils.Code.Classes;
 using Random = UnityEngine.Random;
 
-namespace TssUtils.Code.Misc.Extensions;
+namespace TssUtils.Code.Extensions;
 
 public static class EnumerableExtensions
 {
