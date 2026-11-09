@@ -60,25 +60,8 @@ public static class CommandsIndex
             }
             catch (Exception ex)
             {
-#if DEBUG
-                var formattedEx = ex.ToString();
-#else
-                var formattedEx = ex.GetFancyMessage();
-#endif
-                Logger.Error($"Exception during initialization of {cmd.GetType().Format()}: {formattedEx}");
+                Logger.Error($"Exception during initialization of {cmd.GetType().Format()}: {ex.GetFancyMessage()}");
             }
-    }
-
-    [VerifyMethod]
-    private static void Verify(Assembly assembly)
-    {
-        GetCommands(assembly)
-            .Where(static cmd => !cmd.GetType().Name.EndsWith("Command"))
-            .ForEach(static cmd =>
-                throw new FormatException(
-                    $"Command \"{cmd.GetType().Format()}\" doesn't end with 'Command'"
-                )
-            );
     }
 
     private static IEnumerable<CommandBase> GetCommands(Assembly assembly)
@@ -133,5 +116,17 @@ public static class CommandsIndex
                     }
                 }
         }
+    }
+
+    [VerifyMethod]
+    private static void Verify(Assembly assembly)
+    {
+        GetCommands(assembly)
+            .Where(static cmd => !cmd.GetType().Name.EndsWith("Command"))
+            .ForEach(static cmd =>
+                throw new FormatException(
+                    $"Command \"{cmd.GetType().Format()}\" doesn't end with 'Command'"
+                )
+            );
     }
 }

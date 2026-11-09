@@ -39,7 +39,7 @@ public readonly struct TryGet<T> : ITryGet<T>
             $"Tried accessing {nameof(Value)} on an unsuccessful {nameof(TryGet<>)}"
         );
 
-    public static TryGet<T> RunSafe(Func<T> func, bool fullErrorMessage = false)
+    public static TryGet<T> RunSafe(Func<T> func)
     {
         try
         {
@@ -47,9 +47,7 @@ public readonly struct TryGet<T> : ITryGet<T>
         }
         catch (Exception ex)
         {
-            return fullErrorMessage
-                ? ex.ToString()
-                : ex.GetFancyMessage();
+            return ex;
         }
     }
 
