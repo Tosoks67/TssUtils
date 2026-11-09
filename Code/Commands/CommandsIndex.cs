@@ -121,12 +121,15 @@ public static class CommandsIndex
     [VerifyMethod]
     private static void Verify(Assembly assembly)
     {
-        GetCommands(assembly)
-            .Where(static cmd => !cmd.GetType().Name.EndsWith("Command"))
-            .ForEach(static cmd =>
-                throw new FormatException(
-                    $"Command \"{cmd.GetType().Format()}\" doesn't end with 'Command'"
+        if (
+            GetCommands(assembly)
+                .FirstOrDefault(static cmd =>
+                    !cmd.GetType().Name.EndsWith("Command")
                 )
+            is { } cmd
+        )
+            throw new FormatException(
+                $"Command \"{cmd.GetType().Format()}\" doesn't end with 'Command'"
             );
     }
 }
