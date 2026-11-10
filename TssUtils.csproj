@@ -34,7 +34,7 @@
 
     <!-- QoL moving the dll -->
     <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-        <Copy SourceFiles="$(TargetDir)TssUtils.dll" DestinationFolder="$(SL_DEV_REFERENCES)" Condition="'$(SL_DEV_REFERENCES)' != ''"/>
+        <Copy SourceFiles="$(TargetDir)TssUtils.dll" DestinationFolder="$(TSSUTILS_COPY_TO)" Condition="'$(TSSUTILS_COPY_TO)' != ''"/>
     </Target>
 
     <!-- ignore warnings about mismatch between versions of core libs
