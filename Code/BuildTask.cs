@@ -27,12 +27,7 @@ public class BuildTask : Task
 
         try
         {
-            BlacklistedAssemblyNames =
-            [
-                ..
-                BlacklistedAssemblyNames
-                    .Select(static str => str.Trim())
-            ];
+            BlacklistedAssemblyNames.ModifyAll(static str => str.Trim());
 
             outputAssemblyNames =
             [

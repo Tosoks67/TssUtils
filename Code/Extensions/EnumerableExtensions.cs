@@ -103,6 +103,15 @@ public static class EnumerableExtensions
     extension<T>(IList<T> collection)
     {
         public ReadOnlyCollection<T> AsReadOnly() => new(collection);
+
+        public void ModifyAll(Func<T, T> selector)
+        {
+            if (collection.IsReadOnly)
+                throw new NotSupportedException("Collection is read-only");
+
+            for (var i = 0; i < collection.Count; i++)
+                collection[i] = selector(collection[i]);
+        }
     }
 
     public static byte Sum(this IEnumerable<byte> source)
