@@ -32,6 +32,10 @@
         <OutputPath>bin\Release\</OutputPath>
     </PropertyGroup>
 
+    <PropertyGroup>
+        <DefineConstants>$(DefineConstants);JETBRAINS_ANNOTATIONS</DefineConstants>
+    </PropertyGroup>
+
     <!-- QoL moving the dll -->
     <Target Name="PostBuild" AfterTargets="PostBuildEvent">
         <Copy SourceFiles="$(TargetDir)TssUtils.dll" DestinationFolder="$(TSSUTILS_COPY_TO)" Condition="'$(TSSUTILS_COPY_TO)' != ''"/>
