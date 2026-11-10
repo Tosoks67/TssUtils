@@ -86,8 +86,6 @@ public class BuildTask : Task
 
             var assemblyToCheck = Assembly.LoadFrom(AssemblyPath);
 
-            LogMsg($"\n{nameof(assemblyToCheck)} is now {assemblyToCheck.FullName}\n");
-
             var methods = outputAssemblyNames
                 .Select(tuple =>
                     {
@@ -206,7 +204,7 @@ public class BuildTask : Task
         catch (ReflectionTypeLoadException e)
         {
             foreach (var loaderEx in e.LoaderExceptions)
-                Log.LogError("Loader Error: " + loaderEx);
+                Log.LogError($"Loader Error:\n{loaderEx}");
 
             return false;
         }
@@ -215,9 +213,9 @@ public class BuildTask : Task
             Log.LogError(e.InnerException.ToString());
             return false;
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            Log.LogError(e.ToString());
+            Log.LogError(ex.ToString());
             return false;
         }
         finally
@@ -261,9 +259,9 @@ public class BuildTask : Task
                 )
                     return Assembly.LoadFrom(foundReferenceTuple.FullPath);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Log.LogError("Resolver Error: " + e);
+                Log.LogError($"Resolver Error:\n{ex}");
             }
 
             return null;

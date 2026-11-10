@@ -37,9 +37,9 @@ public readonly struct Result : IResult
             action();
             return true;
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            return e.ToString();
+            return ex.ToString();
         }
     }
 
