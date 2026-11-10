@@ -27,7 +27,11 @@ public readonly struct Result : IResult
     public Exception Exception => !Success
         ? field
         : throw new InvalidOperationException(
-            $"Tried accessing {nameof(Exception)} on a successful {nameof(Result)}"
+            string.Format(
+                Localized.XAccessOnSuccessfulY,
+                nameof(Exception),
+                nameof(Result)
+            )
         );
 
     public static Result RunSafe(Action action)
@@ -47,7 +51,10 @@ public readonly struct Result : IResult
     {
         if (!success)
             throw new InvalidOperationException(
-                $"{nameof(Result)} cannot be false without an error message"
+                string.Format(
+                    Localized.XCannotBeFalseWithoutError,
+                    nameof(Result)
+                )
             );
 
         return new Result();

@@ -6,7 +6,7 @@ namespace TssUtils.Code.Extensions;
 public static class EnumerableExtensions
 {
     private static NotSupportedException CollectionReadOnlyEx => new(
-        "Collection is read-only"
+        Localized.CollectionReadOnly
     );
 
     public static IEnumerable<T> Flatten<T>(this IEnumerable<IEnumerable<T>> source)

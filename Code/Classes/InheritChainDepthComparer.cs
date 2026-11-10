@@ -22,10 +22,11 @@ public class InheritChainDepthComparer(Type mustInheritFrom) : IComparer<Type>
     {
         if (!MustInheritFrom.IsAssignableFrom(t))
             throw new InvalidCastException(
-                "Type\n" +
-                t.Format() +
-                "\ndoes not inherit from the required type\n" +
-                MustInheritFrom.Format()
+                string.Format(
+                    Localized.InheritChainNotDerivedException,
+                    t.Format(),
+                    MustInheritFrom.Format()
+                )
             );
 
         return ChainDepthCache.GetOrAdd(

@@ -32,13 +32,21 @@ public readonly struct StringTryGet : ITryGet<string>
     public Exception Exception => !Success
         ? field
         : throw new InvalidOperationException(
-            $"Tried accessing {nameof(Exception)} on a successful {nameof(StringTryGet)}"
+            string.Format(
+                Localized.XAccessOnSuccessfulY,
+                nameof(Exception),
+                nameof(StringTryGet)
+            )
         );
 
     public string Value => Success
         ? field
         : throw new InvalidOperationException(
-            $"Tried accessing {nameof(Value)} on an unsuccessful {nameof(StringTryGet)}"
+            string.Format(
+                Localized.XAccessOnUnsuccessfulY,
+                nameof(Value),
+                nameof(StringTryGet)
+            )
         );
 
     public static implicit operator StringTryGet(string value) => new(value);
@@ -47,8 +55,12 @@ public readonly struct StringTryGet : ITryGet<string>
     {
         if (result.Success)
             throw new ArgumentException(
-                $"Cannot pass a successful {nameof(Result)} to {nameof(StringTryGet)} " +
-                $"as {nameof(Value)} cannot be retrieved from it",
+                string.Format(
+                    Localized.CannotPassSuccessfulXToYAsZCannotBeRetrieved,
+                    nameof(Result),
+                    nameof(StringTryGet),
+                    nameof(Value)
+                ),
                 nameof(result)
             );
 

@@ -30,13 +30,21 @@ public readonly struct TryGet<T> : ITryGet<T>
     public Exception Exception => !Success
         ? field
         : throw new InvalidOperationException(
-            $"Tried accessing {nameof(Exception)} on a successful {nameof(TryGet<>)}"
+            string.Format(
+                Localized.XAccessOnSuccessfulY,
+                nameof(Exception),
+                nameof(TryGet<>)
+            )
         );
 
     public T Value => Success
         ? field
         : throw new InvalidOperationException(
-            $"Tried accessing {nameof(Value)} on an unsuccessful {nameof(TryGet<>)}"
+            string.Format(
+                Localized.XAccessOnUnsuccessfulY,
+                nameof(Value),
+                nameof(TryGet<>)
+            )
         );
 
     public static TryGet<T> RunSafe(Func<T> func)
@@ -60,8 +68,12 @@ public readonly struct TryGet<T> : ITryGet<T>
     {
         if (result.Success)
             throw new ArgumentException(
-                $"Cannot pass a successful {nameof(Result)} to {nameof(TryGet<>)} " +
-                $"as {nameof(Value)} cannot be retrieved from it",
+                string.Format(
+                    Localized.CannotPassSuccessfulXToYAsZCannotBeRetrieved,
+                    nameof(Result),
+                    nameof(TryGet<>),
+                    nameof(Value)
+                ),
                 nameof(result)
             );
 
