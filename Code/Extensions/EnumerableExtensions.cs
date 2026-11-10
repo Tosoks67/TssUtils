@@ -1,24 +1,10 @@
 ﻿using System.Collections.ObjectModel;
 using TssUtils.Code.Classes;
-using Random = UnityEngine.Random;
 
 namespace TssUtils.Code.Extensions;
 
 public static class EnumerableExtensions
 {
-    public static T[] ToShuffled<T>(this IEnumerable<T> enumerable)
-    {
-        var buffer = enumerable.ToArray();
-
-        for (var i = buffer.Length - 1; i > 0; i--)
-        {
-            var j = Random.Range(0, i + 1);
-            (buffer[i], buffer[j]) = (buffer[j], buffer[i]);
-        }
-
-        return buffer;
-    }
-
     public static IEnumerable<T> Flatten<T>(this IEnumerable<IEnumerable<T>> source)
     {
         return source.SelectMany(static x => x);
@@ -116,10 +102,6 @@ public static class EnumerableExtensions
 
     extension<T>(IList<T> collection)
     {
-        public T? GetRandom() => collection.IsEmpty()
-            ? default
-            : collection[Random.Range(0, collection.Count)];
-
         public ReadOnlyCollection<T> AsReadOnly() => new(collection);
     }
 

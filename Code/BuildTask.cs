@@ -271,7 +271,7 @@ public class BuildTask : Task
 
         void LogMsg(string message)
         {
-            Log.LogMessage(Microsoft.Build.Framework.MessageImportance.High, message);
+            Log.LogMessage(MessageImportance.High, message);
         }
 
         static string LongMethodName(MethodInfo method)

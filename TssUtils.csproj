@@ -32,21 +32,6 @@
         <OutputPath>bin\Release\</OutputPath>
     </PropertyGroup>
 
-    <ItemGroup>
-        <Reference Include="Assembly-CSharp-firstpass">
-            <HintPath>$(SL_DEV_REFERENCES)\Assembly-CSharp-firstpass.dll</HintPath>
-        </Reference>
-        <Reference Include="Mirror">
-            <HintPath>$(SL_DEV_REFERENCES)\Mirror.dll</HintPath>
-        </Reference>
-        <Reference Include="UnityEngine">
-            <HintPath>$(SL_DEV_REFERENCES)\UnityEngine.dll</HintPath>
-        </Reference>
-        <Reference Include="UnityEngine.CoreModule">
-            <HintPath>$(SL_DEV_REFERENCES)\UnityEngine.CoreModule.dll</HintPath>
-        </Reference>
-    </ItemGroup>
-
     <!-- QoL moving the dll -->
     <Target Name="PostBuild" AfterTargets="PostBuildEvent">
         <Copy SourceFiles="$(TargetDir)TssUtils.dll" DestinationFolder="$(SL_DEV_REFERENCES)" Condition="'$(SL_DEV_REFERENCES)' != ''"/>
@@ -60,9 +45,8 @@
 
     <!-- nuget refs -->
     <ItemGroup>
-        <PackageReference Include="ExMod.Exiled" Version="9.14.2"/>
+        <PackageReference Include="JetBrains.Annotations" Version="2026.2.0"/>
         <PackageReference Include="Microsoft.Build.Utilities.Core" Version="18.10.1"/>
-        <PackageReference Include="Northwood.LabAPI" Version="1.1.7"/>
         <PackageReference Include="PolySharp" Version="1.16.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

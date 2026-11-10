@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Reflection;
 using TssUtils.Code.Classes;
-using UnityEngine;
 
 namespace TssUtils.Code.Extensions;
 
@@ -47,34 +46,5 @@ public static class EnumExtensions
             Enum.GetUnderlyingType(value.GetType()) == typeof(ulong)
                 ? unchecked((long)Convert.ToUInt64(value))
                 : Convert.ToInt64(value);
-    }
-
-    extension(Color color)
-    {
-        public static Color FromHex(uint hex, bool withAlpha = false)
-        {
-            if (withAlpha)
-                return new Color(
-                    ((hex >> 24) & 0xFF) / 255f,
-                    ((hex >> 16) & 0xFF) / 255f,
-                    ((hex >> 8) & 0xFF) / 255f,
-                    (hex & 0xFF) / 255f
-                );
-            return new Color(
-                ((hex >> 16) & 0xFF) / 255f,
-                ((hex >> 8) & 0xFF) / 255f,
-                (hex & 0xFF) / 255f
-            );
-        }
-
-        public string ToHex(bool withAlpha = false) => ((Color32)color).ToHex(withAlpha);
-    }
-
-    extension(Color32 color)
-    {
-        public string ToHex(bool withAlpha = false) =>
-            withAlpha
-                ? $"#{color.r:X2}{color.g:X2}{color.b:X2}{color.a:X2}"
-                : $"#{color.r:X2}{color.g:X2}{color.b:X2}";
     }
 }

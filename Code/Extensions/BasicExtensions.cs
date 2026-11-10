@@ -95,5 +95,9 @@ public static class BasicExtensions
             (string.IsNullOrWhiteSpace(str)
                 ? orStr
                 : str)!;
+
+        public bool IsEmpty() => string.IsNullOrEmpty(str);
+
+        public bool IsEmptyOrWhitespace() => string.IsNullOrWhiteSpace(str);
     }
 }
