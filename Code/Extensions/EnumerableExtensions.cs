@@ -5,6 +5,10 @@ namespace TssUtils.Code.Extensions;
 
 public static class EnumerableExtensions
 {
+    private static NotSupportedException CollectionReadOnlyEx => new(
+        "Collection is read-only"
+    );
+
     public static IEnumerable<T> Flatten<T>(this IEnumerable<IEnumerable<T>> source)
     {
         return source.SelectMany(static x => x);
@@ -98,6 +102,38 @@ public static class EnumerableExtensions
 
             return -1;
         }
+
+        public void AddRange(IEnumerable<T> enumerable)
+        {
+            if (collection.IsReadOnly)
+                throw CollectionReadOnlyEx;
+
+            foreach (var item in enumerable)
+                collection.Add(item);
+        }
+
+        public void ReplaceWith(IEnumerable<T> enumerable)
+        {
+            if (collection is T[] array)
+            {
+                using var enumerator = enumerable.GetEnumerator();
+                for (var i = 0; i < array.Length; i++)
+                    array[i] = enumerator.MoveNext()
+                        ? enumerator.Current
+                        : default!;
+
+                return;
+            }
+
+            if (collection.IsReadOnly)
+                throw CollectionReadOnlyEx;
+
+            var items = enumerable.ToArray();
+
+            collection.Clear();
+            foreach (var item in items)
+                collection.Add(item);
+        }
     }
 
     extension<T>(IList<T> collection)
@@ -106,9 +142,6 @@ public static class EnumerableExtensions
 
         public void ModifyAll(Func<T, T> selector)
         {
-            if (collection.IsReadOnly)
-                throw new NotSupportedException("Collection is read-only");
-
             for (var i = 0; i < collection.Count; i++)
                 collection[i] = selector(collection[i]);
         }

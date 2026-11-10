@@ -77,6 +77,40 @@ public static class BasicExtensions
         {
             return str.Where(char.IsUpper).Aggregate(string.Empty, static (current, c) => current + c);
         }
+
+        public string GetInitials(int amount = 2)
+        {
+            return string.Concat(
+                str
+                    .Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries)
+                    .Take(amount)
+                    .Select(static word => word[0])
+            ).ToUpper();
+        }
+
+        public string Replace(char[] charsToReplace, char charToReplaceWith)
+        {
+            return string.Concat(
+                str.Select(c =>
+                    charsToReplace.Contains(c)
+                        ? charToReplaceWith
+                        : c
+                )
+            );
+        }
+
+        public string Limit(int limit)
+        {
+            var result = str[..Math.Min(limit, str.Length)];
+
+            if (
+                result.Length > 0
+                && char.IsHighSurrogate(result[^1])
+            )
+                result = result[..^1];
+
+            return result;
+        }
     }
 
     extension(string? str)
